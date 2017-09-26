@@ -1,4 +1,3 @@
-
 import { Container, Label, Input } from './styles'
 
 export default ({ label, type, name, placeholder }) => {

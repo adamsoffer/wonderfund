@@ -13,7 +13,7 @@ export const Container = glamorous.button(
     textAlign: 'center',
     padding: '12px 20px'
   },
-  (props) => ({
+  props => ({
     backgroundColor: props.secondary ? '#f26a81' : '#ffffff',
     color: props.secondary ? '#ffffff' : '#000000',
     width: props.fullWidth ? '100%' : 'auto'

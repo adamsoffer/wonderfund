@@ -21,7 +21,7 @@ css.global('body', {
 })
 
 export default class extends React.Component {
-  static async getInitialProps ({ pathname }) {
+  static async getInitialProps({ pathname }) {
     const account = await getAccount()
     const projects = await getProjects()
     return {
@@ -30,7 +30,7 @@ export default class extends React.Component {
     }
   }
 
-  render () {
+  render() {
     return (
       <Main>
         <Header />
@@ -41,49 +41,53 @@ export default class extends React.Component {
   }
 }
 
-async function getProjects () {
+async function getProjects() {
   const projectInstance = await FundingHub.deployed()
   const projectAddresses = await projectInstance.getProjects.call()
   let promiseArray = []
-  projectAddresses.map((projectAddress) => {
+  projectAddresses.map(projectAddress => {
     return promiseArray.push(getProject(projectAddress))
   })
   return Promise.all(promiseArray)
 }
 
-function getProject (projectAddress) {
+function getProject(projectAddress) {
   let projectInstance = Project.at(projectAddress)
   return new Promise((resolve, reject) => {
     Promise.all([
       projectInstance.getProject.call(),
       projectInstance.amountRaised.call(),
       projectInstance.successfullyFunded.call()
-    ]).then((result) => {
-      resolve({
-        name: web3.toAscii(result[0][0]),
-        address: projectAddress,
-        description: result[0][1],
-        imageUrl: result[0][2],
-        deadline: moment.unix(result[0][3].toNumber()),
-        fundingGoal: web3.fromWei(result[0][4].toNumber(), 'ether'),
-        amountRaised: web3.fromWei(result[1].toNumber(), 'ether'),
-        successfullyFunded: result[2]
+    ])
+      .then(result => {
+        resolve({
+          name: web3.toAscii(result[0][0]),
+          address: projectAddress,
+          description: result[0][1],
+          imageUrl: result[0][2],
+          deadline: moment.unix(result[0][3].toNumber()),
+          fundingGoal: web3.fromWei(result[0][4].toNumber(), 'ether'),
+          amountRaised: web3.fromWei(result[1].toNumber(), 'ether'),
+          successfullyFunded: result[2]
+        })
       })
-    }).catch((e) => {
-      console.log(e)
-      reject(e)
-    })
+      .catch(e => {
+        console.log(e)
+        reject(e)
+      })
   })
 }
 
-function getAccount () {
-  return new Promise(function (resolve, reject) {
+function getAccount() {
+  return new Promise(function(resolve, reject) {
     web3.eth.getAccounts((err, accounts) => {
       if (err != null) {
         reject('There was an error fetching your accounts.')
       }
       if (accounts.length === 0) {
-        reject('Could not get any accounts! Make sure your Ethereum client is configured correctly.')
+        reject(
+          'Could not get any accounts! Make sure your Ethereum client is configured correctly.'
+        )
         return
       }
       resolve(accounts[0])

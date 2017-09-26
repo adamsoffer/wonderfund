@@ -8,7 +8,8 @@ export default ({ project }) => (
       <Body>
         <Heading>Decentralized crowdfunding.</Heading>
         <Paragraph>
-          Wonderfund is a platform for crowdfunding projects on the Ethereum network.
+          Wonderfund is a platform for crowdfunding projects on the Ethereum
+          network.
         </Paragraph>
       </Body>
       <Link href={{ pathname: 'project', query: { slug: project.address } }}>

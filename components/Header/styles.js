@@ -10,7 +10,7 @@ export const Container = glamorous.header(
     position: 'absolute',
     width: '100%'
   },
-  (props) => ({
+  props => ({
     position: props.relative ? 'relative' : 'absolute',
     marginBottom: props.relative ? '40px' : '0',
     boxShadow: props.relative ? '0 2px 6px 0 rgba(0,0,0,0.17)' : 'none',
@@ -25,7 +25,7 @@ export const Logo = glamorous.span(
     fontWeight: 'bold',
     letterSpacing: '1px'
   },
-  (props) => ({
+  props => ({
     color: props.inverse ? '#000000' : '#ffffff'
   })
 )
@@ -41,9 +41,9 @@ export const LinkContainer = glamorous.a(
     cursor: 'pointer',
     fontSize: '16px',
     fontWeight: 600,
-    'marginRight': '20px'
+    marginRight: '20px'
   },
-  (props) => ({
+  props => ({
     color: props.inverse ? '#000000' : '#ffffff'
   })
 )

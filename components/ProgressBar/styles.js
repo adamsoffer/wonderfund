@@ -17,7 +17,7 @@ export const Fill = glamorous.span(
     display: 'block',
     height: '100%'
   },
-  (props) => ({
+  props => ({
     width: props.width ? props.width : 0
   })
 )

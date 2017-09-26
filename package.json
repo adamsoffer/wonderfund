@@ -11,9 +11,7 @@
   "license": "MIT",
   "standard": {
     "parser": "babel-eslint",
-    "ignore": [
-      "**/node_modules/**"
-    ],
+    "ignore": ["**/node_modules/**"],
     "globals": [
       "web3",
       "contract",

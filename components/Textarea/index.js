@@ -1,4 +1,3 @@
-
 import { Container, Label, Textarea } from './styles'
 
 export default ({ label, name, placeholder }) => {

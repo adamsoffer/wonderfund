@@ -1,6 +1,6 @@
 import { Container, Fill } from './styles'
 
-export default ({width}) => (
+export default ({ width }) => (
   <Container>
     <Fill width={width} />
   </Container>
