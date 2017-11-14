@@ -9,8 +9,7 @@ export default ({ projects }) => (
         return (
           <Item key={i}>
             <Link
-              href={{ pathname: 'project', query: { slug: project.address } }}
-            >
+              href={{ pathname: 'project', query: { slug: project.address } }}>
               <a>
                 <ProjectCard project={project} />
               </a>

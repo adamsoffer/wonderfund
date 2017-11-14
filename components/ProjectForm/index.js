@@ -49,8 +49,7 @@ export default ({ project, handleSubmit }) => {
         <Button
           onClick={() => {
             this.claimRefund()
-          }}
-        >
+          }}>
           Claim Refund
         </Button>
       </Body>

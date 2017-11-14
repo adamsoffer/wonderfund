@@ -65,8 +65,7 @@ export default class extends React.Component {
             fontSize: '40px',
             lineHeight: '48px',
             marginBottom: '20px'
-          }}
-        >
+          }}>
           Start a campaign
         </H1>
         <CampaignForm handleSubmit={this.handleSubmit.bind(this)} />

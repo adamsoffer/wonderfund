@@ -5,8 +5,7 @@ export default ({ type, children, secondary, onClick, fullWidth }) => (
     onClick={onClick}
     type={type}
     secondary={secondary}
-    fullWidth={fullWidth}
-  >
+    fullWidth={fullWidth}>
     {children}
   </Container>
 )

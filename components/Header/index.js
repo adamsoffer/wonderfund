@@ -21,8 +21,7 @@ export default ({ relative, inverse }) => (
         <LinkContainer
           href="mailto:ads1018@gmail.com"
           target="_blank"
-          inverse={inverse}
-        >
+          inverse={inverse}>
           Contact
         </LinkContainer>
       </Link>

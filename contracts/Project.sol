@@ -1,6 +1,10 @@
 pragma solidity ^0.4.2;
 
+
 contract Project {
+  // Note: Project name description and image url are for demo purposes only.
+  // In a real world application this data incurs uneccessary expense and
+  // should live offchain.
   struct ProjectInfo {
     bytes32 projectName;
     string description;
@@ -22,58 +26,84 @@ contract Project {
 
   modifier beforeDeadline() {
     if (now >= projectInfo.deadline) {
-      throw;
+      revert();
     }
     _;
   }
 
   modifier afterDeadline() {
     if (now < projectInfo.deadline) {
-      throw;
+      revert();
     }
     _;
   }
 
   modifier goalReached() {
-    if (amountRaised < projectInfo.fundingGoal) {
-      throw;
+    if (!successfullyFunded) {
+      revert();
     }
     _;
   }
 
   modifier goalNotReached() {
-    if (amountRaised >= projectInfo.fundingGoal) {
-      throw;
+    if (successfullyFunded) {
+      revert();
     }
     _;
   }
 
-  function Project(bytes32 projectName, string description, string imageUrl, address beneficiary, uint256 deadline, uint fundingGoal) {
-    projectInfo = ProjectInfo(projectName, description, imageUrl, beneficiary, deadline, fundingGoal);
+  function Project(
+    bytes32 projectName,
+    string description,
+    string imageUrl,
+    address beneficiary,
+    uint256 deadline,
+    uint fundingGoal
+  ) public
+  {
+    projectInfo = ProjectInfo(
+      projectName,
+      description,
+      imageUrl,
+      beneficiary,
+      deadline,
+      fundingGoal
+    );
   }
 
-  function getProject() returns (bytes32, string, string, uint256, uint) {
-    return (projectInfo.projectName, projectInfo.description, projectInfo.imageUrl, projectInfo.deadline, projectInfo.fundingGoal);
+  function getProject() public returns (
+    bytes32 projectName,
+    string description,
+    string imageUrl,
+    uint256 deadline,
+    uint fundingGoal
+  ) {
+    return (
+      projectInfo.projectName,
+      projectInfo.description,
+      projectInfo.imageUrl,
+      projectInfo.deadline,
+      projectInfo.fundingGoal
+    );
   }
 
-  function fund(address funder) beforeDeadline goalNotReached payable {
-    if (msg.value > 0) {
-      funderInfo[funder].amount += msg.value;
-      funders.push(funder);
-      amountRaised += msg.value;
+  function fund(address funder) public beforeDeadline goalNotReached payable {
+    require(msg.value > 0);
+    funderInfo[funder].amount += msg.value;
+    funders.push(funder);
+    amountRaised += msg.value;
 
-      if(amountRaised >= projectInfo.fundingGoal) {
-        successfullyFunded = true;
-        payout();
-      }
+    if (amountRaised >= projectInfo.fundingGoal) {
+      successfullyFunded = true;
     }
   }
 
-  function payout() private goalReached {
+  function payout() public goalReached payable {
+    require(msg.sender == projectInfo.beneficiary);
     projectInfo.beneficiary.transfer(amountRaised);
   }
 
-  function refund() afterDeadline goalNotReached {
+  function refund() public afterDeadline goalNotReached payable {
     msg.sender.transfer(funderInfo[msg.sender].amount);
   }
 }
