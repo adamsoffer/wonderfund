@@ -2,6 +2,8 @@
 
 Directly fund projects around the world.
 
+![Wonderfund](https://www.dropbox.com/s/u86z2fztt290juq/wonderfund-screenshot.png?raw=1)
+
 ## Requirements
 
 1. Node
