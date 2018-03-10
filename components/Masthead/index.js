@@ -1,22 +1,17 @@
 import Link from 'next/link'
 import { Container, Wrapper, Body, Heading, Paragraph } from './styles'
-import ProjectCard from '../ProjectCard'
+import Button from '../Button'
 
-export default ({ project }) => (
+export default () => (
   <Container>
     <Wrapper>
       <Body>
-        <Heading>Decentralized crowdfunding.</Heading>
-        <Paragraph>
-          Wonderfund is a platform for crowdfunding projects on the Ethereum
-          network.
-        </Paragraph>
+        <Heading>Wonderfund</Heading>
+        <Paragraph>Directly fund projects around the world.</Paragraph>
+        <Button large inverse>
+          Discover a Project
+        </Button>
       </Body>
-      <Link href={{ pathname: 'project', query: { slug: project.address } }}>
-        <a>
-          <ProjectCard project={project} style={{ top: '85px' }} />
-        </a>
-      </Link>
     </Wrapper>
   </Container>
 )

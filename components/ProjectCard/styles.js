@@ -46,5 +46,5 @@ export const Num = glamorous.span({
 
 export const StatsContainer = glamorous.span({
   display: 'flex',
-  flexDirection: 'column'
+  justifyContent: 'space-between'
 })

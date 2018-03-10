@@ -18,23 +18,30 @@ FundingHub.setProvider(web3.currentProvider)
 
 export default class Project extends React.Component {
   static async getInitialProps({ query }) {
-    const account = await getAccount()
     const projectAddress = query.slug
     const project = await getProject(projectAddress)
     return {
-      account: account,
       project: project
     }
+  }
+
+  componentDidMount() {
+    this.setAccount()
+  }
+
+  async setAccount() {
+    let accounts = await web3.eth.getAccounts()
+    this.setState({ account: accounts[0] })
   }
 
   handleSubmit(event) {
     event.preventDefault()
     let eth = event.target.contribution.value
-    let contribution = web3.toWei(eth, 'ether')
+    let contribution = web3.utils.toWei(eth, 'ether')
     FundingHub.deployed()
       .then(instance => {
         return instance.contribute(this.props.project.address, {
-          from: this.props.account,
+          from: this.state.account,
           value: contribution
         })
       })
@@ -49,7 +56,7 @@ export default class Project extends React.Component {
   claimRefund() {
     let projectInstance = ProjectContract.at(this.props.project.address)
     projectInstance
-      .refund({ from: this.props.account })
+      .refund({ from: this.state.account })
       .then(result => {
         console.log('refunded', result)
       })
@@ -62,9 +69,6 @@ export default class Project extends React.Component {
     return (
       <Main>
         <Header inverse relative />
-        <H1 css={{ ...container, fontSize: '40px', lineHeight: '48px' }}>
-          {this.props.project.name}
-        </H1>
         <ProjectForm
           handleSubmit={this.handleSubmit.bind(this)}
           style={{ ...container }}

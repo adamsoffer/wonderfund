@@ -7,10 +7,10 @@ export default ({ handleSubmit }) => (
   <Container>
     <form onSubmit={handleSubmit}>
       <Textfield
-        label="Project name"
+        label="Patient name"
         type="text"
         name="projectName"
-        placeholder="e.g. Oculus Rift"
+        placeholder="e.g. Grover"
       />
       <Textfield
         label="Beneficiary"
@@ -32,9 +32,7 @@ export default ({ handleSubmit }) => (
         placeholder="e.g. 10"
       />
       <Textarea label="Description" type="text" name="description" />
-      <Button secondary type="submit">
-        Create My Campaign
-      </Button>
+      <Button type="submit">Create My Campaign</Button>
     </form>
   </Container>
 )

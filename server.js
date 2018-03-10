@@ -7,7 +7,7 @@ const express = require('express')
 app.prepare().then(() => {
   express()
     .use(handler)
-    .listen(5000, function() {
-      console.log('App listening on port 5000')
+    .listen(3000, function() {
+      console.log('App listening on port 3000')
     })
 })

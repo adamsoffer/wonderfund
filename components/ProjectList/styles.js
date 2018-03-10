@@ -1,11 +1,11 @@
 import glamorous from 'glamorous'
 import { gutterWidth } from '../../lib/constants'
+import { container } from '../../lib/mixins'
 
 export const Container = glamorous.section({
-  margin: '0 auto',
-  maxWidth: '1200px',
+  ...container,
   flexWrap: 'wrap',
-  marginTop: '100px'
+  marginBottom: '40px'
 })
 
 export const List = glamorous.div({

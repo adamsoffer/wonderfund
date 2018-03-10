@@ -1,7 +1,10 @@
-pragma solidity ^0.4.2;
+pragma solidity ^0.4.4;
 
+import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
-contract Project {
+contract Project {  
+  using SafeMath for uint;
+  
   // Note: Project name description and image url are for demo purposes only.
   // In a real world application this data incurs uneccessary expense and
   // should live offchain.
@@ -25,30 +28,22 @@ contract Project {
   mapping (address => Funder) public funderInfo;
 
   modifier beforeDeadline() {
-    if (now >= projectInfo.deadline) {
-      revert();
-    }
+    require(now < projectInfo.deadline);
     _;
   }
 
   modifier afterDeadline() {
-    if (now < projectInfo.deadline) {
-      revert();
-    }
+    require(now >= projectInfo.deadline);
     _;
   }
 
   modifier goalReached() {
-    if (!successfullyFunded) {
-      revert();
-    }
+    require(successfullyFunded);
     _;
   }
 
   modifier goalNotReached() {
-    if (successfullyFunded) {
-      revert();
-    }
+    require(!successfullyFunded);
     _;
   }
 
@@ -61,6 +56,16 @@ contract Project {
     uint fundingGoal
   ) public
   {
+    // Make sure beneficiary is a valid address
+    require(beneficiary != 0);
+
+    // Ensure deadline is set to some time in the future
+    require(now < deadline);
+
+    // Ensure a funding goal is greater than 0
+    require(fundingGoal > 0);
+  
+    // Store project info
     projectInfo = ProjectInfo(
       projectName,
       description,
@@ -71,7 +76,7 @@ contract Project {
     );
   }
 
-  function getProject() public returns (
+  function getProject() public view returns (
     bytes32 projectName,
     string description,
     string imageUrl,
@@ -89,21 +94,30 @@ contract Project {
 
   function fund(address funder) public beforeDeadline goalNotReached payable {
     require(msg.value > 0);
-    funderInfo[funder].amount += msg.value;
+    funderInfo[funder].amount = funderInfo[funder].amount.add(msg.value);
     funders.push(funder);
-    amountRaised += msg.value;
+    amountRaised = amountRaised.add(msg.value);
 
     if (amountRaised >= projectInfo.fundingGoal) {
       successfullyFunded = true;
     }
   }
 
-  function payout() public goalReached payable {
+  function payout() public afterDeadline goalReached {
     require(msg.sender == projectInfo.beneficiary);
-    projectInfo.beneficiary.transfer(amountRaised);
+    uint amount = amountRaised;
+    amountRaised = 0;
+    projectInfo.beneficiary.transfer(amount);
   }
 
-  function refund() public afterDeadline goalNotReached payable {
-    msg.sender.transfer(funderInfo[msg.sender].amount);
+  function refund() public afterDeadline goalNotReached {
+    require(funderInfo[msg.sender].amount > 0);
+    uint refundAmount = funderInfo[msg.sender].amount;
+    funderInfo[msg.sender].amount = 0;
+    msg.sender.transfer(refundAmount);
+  }
+
+  function() public {
+    revert();
   }
 }

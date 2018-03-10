@@ -14,11 +14,13 @@ const FundingHub = contract(fundinghubArtifacts)
 FundingHub.setProvider(web3.currentProvider)
 
 export default class extends React.Component {
-  static async getInitialProps({ pathname }) {
-    const account = await getAccount()
-    return {
-      account: account
-    }
+  componentDidMount() {
+    this.setAccount()
+  }
+
+  async setAccount() {
+    let accounts = await web3.eth.getAccounts()
+    this.setState({ account: accounts[0] })
   }
 
   handleSubmit(event) {
@@ -28,10 +30,10 @@ export default class extends React.Component {
     let imageUrl = event.target.imageUrl.value
     let beneficiary = event.target.beneficiary.value
     let deadline = moment(event.target.deadline.value).unix()
-    let fundingGoal = web3.toWei(
-      parseInt(event.target.fundingGoal.value),
-      'ether'
-    )
+
+    let fundingGoal = web3.utils
+      .toWei(event.target.fundingGoal.value.toString(10), 'ether')
+      .toString()
     FundingHub.deployed()
       .then(instance => {
         return instance.createProject(
@@ -41,7 +43,7 @@ export default class extends React.Component {
           beneficiary,
           deadline,
           fundingGoal,
-          { from: this.props.account }
+          { from: this.state.account }
         )
       })
       .then(projectInstance => {

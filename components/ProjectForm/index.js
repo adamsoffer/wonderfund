@@ -73,7 +73,7 @@ export default ({ project, handleSubmit }) => {
             funded
           </Stat>
           <Stat>
-            <Num>{daysRemaining(project.deadline)}</Num> days to go
+            <Num>{project.fundingGoal}</Num> ETH to go
           </Stat>
         </StatsContainer>
         <Textfield
@@ -82,7 +82,7 @@ export default ({ project, handleSubmit }) => {
           name="contribution"
           placeholder="e.g 1"
         />
-        <Button secondary fullWidth type="submit">
+        <Button fullWidth type="submit">
           Fund
         </Button>
       </Body>

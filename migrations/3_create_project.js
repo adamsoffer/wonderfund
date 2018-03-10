@@ -10,7 +10,7 @@ module.exports = function(deployer, network, accounts) {
   var projectName = 'Oculus Rift'
   var description = 'Rift is unlike anything you have experienced...'
   var imageUrl =
-    'http://virtualrealitytimes.com/wp-content/uploads/2017/04/3044381-ocie.jpg'
+    'https://s3.amazonaws.com/static.oculus.com/website/2016/03/riftshipping2.jpg'
   var beneficiary = accounts[0]
   var deadline = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60
   var fundingGoal = web3.toWei(10, 'ether')

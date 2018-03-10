@@ -19,7 +19,7 @@ export const Input = glamorous.input({
   color: '#2a2f35',
   margin: '0 0 10px',
   maxHeight: '55px',
-  borderRadius: '3px',
+  borderRadius: '5px',
   fontSize: '16px',
   boxShadow: 'none',
   ':focus': {

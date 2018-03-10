@@ -1,7 +1,9 @@
 import React from 'react'
 import { default as contract } from 'truffle-contract'
 import { css } from 'glamor'
+import { Div, H2, H3 } from 'glamorous'
 import moment from 'moment'
+import 'isomorphic-fetch'
 import fundinghubArtifacts from '../build/contracts/FundingHub.json'
 import projectArtifacts from '../build/contracts/Project.json'
 import web3 from '../lib/web3'
@@ -9,33 +11,51 @@ import Main from '../lib/layout'
 import Header from '../components/Header'
 import Masthead from '../components/Masthead'
 import ProjectList from '../components/ProjectList'
-import 'isomorphic-fetch'
+import PageTitle from '../components/PageTitle'
+import Footer from '../components/Footer'
 
 const FundingHub = contract(fundinghubArtifacts)
 const Project = contract(projectArtifacts)
 FundingHub.setProvider(web3.currentProvider)
 Project.setProvider(web3.currentProvider)
 
-css.global('body', {
-  backgroundColor: '#f5f5f5'
-})
+// dirty hack for web3@1.0.0 support for localhost testrpc, see https://github.com/trufflesuite/truffle-contract/issues/56#issuecomment-331084530
+if (typeof Project.currentProvider.sendAsync !== 'function') {
+  Project.currentProvider.sendAsync = function() {
+    return Project.currentProvider.send.apply(
+      Project.currentProvider,
+      arguments
+    )
+  }
+}
 
 export default class extends React.Component {
   static async getInitialProps({ pathname }) {
-    const account = await getAccount()
     const projects = await getProjects()
     return {
-      account: account,
-      projects: projects
+      projects
     }
+  }
+
+  componentDidMount() {
+    this.setAccount()
+  }
+
+  async setAccount() {
+    let accounts = await web3.eth.getAccounts()
+    this.setState({ account: accounts[0] })
   }
 
   render() {
     return (
       <Main>
         <Header />
-        <Masthead project={this.props.projects[0]} />
-        <ProjectList projects={this.props.projects.slice(1)} />
+        <Masthead />
+        <PageTitle
+          heading="Featured Projects"
+        />
+        <ProjectList projects={this.props.projects} />
+        <Footer />
       </Main>
     )
   }
@@ -61,13 +81,13 @@ function getProject(projectAddress) {
     ])
       .then(result => {
         resolve({
-          name: web3.toAscii(result[0][0]),
+          name: web3.utils.toAscii(result[0][0]),
           address: projectAddress,
           description: result[0][1],
           imageUrl: result[0][2],
-          deadline: moment.unix(result[0][3].toNumber()),
-          fundingGoal: web3.fromWei(result[0][4].toNumber(), 'ether'),
-          amountRaised: web3.fromWei(result[1].toNumber(), 'ether'),
+          deadline: moment.unix(result[0][3].toString()),
+          fundingGoal: web3.utils.fromWei(result[0][4].toString(), 'ether'),
+          amountRaised: web3.utils.fromWei(result[1].toString(), 'ether'),
           successfullyFunded: result[2]
         })
       })
@@ -78,21 +98,4 @@ function getProject(projectAddress) {
   })
 }
 
-function getAccount() {
-  return new Promise(function(resolve, reject) {
-    web3.eth.getAccounts((err, accounts) => {
-      if (err != null) {
-        reject('There was an error fetching your accounts.')
-      }
-      if (accounts.length === 0) {
-        reject(
-          'Could not get any accounts! Make sure your Ethereum client is configured correctly.'
-        )
-        return
-      }
-      resolve(accounts[0])
-    })
-  })
-}
-
-export { getAccount, getProject }
+export { getProject }

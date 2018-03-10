@@ -1,7 +1,5 @@
-var FundingHub = artifacts.require('./FundingHub.sol')
-var Project = artifacts.require('./Project.sol')
+let FundingHub = artifacts.require('./FundingHub.sol')
 
 module.exports = function(deployer) {
   deployer.deploy(FundingHub)
-  deployer.deploy(Project)
 }

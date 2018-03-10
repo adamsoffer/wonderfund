@@ -5,17 +5,7 @@ const addEvmFunctions = require('../lib/evmFunctions.js')
 
 contract('FundingHub', function(accounts) {
   addEvmFunctions(web3)
-  Promise.promisifyAll(web3.eth, { suffix: 'Promise' })
-  Promise.promisifyAll(web3.version, { suffix: 'Promise' })
   Promise.promisifyAll(web3.evm, { suffix: 'Promise' })
-
-  let isTestRPC
-
-  before('should identify TestRPC', function() {
-    return web3.version
-      .getNodePromise()
-      .then(node => (isTestRPC = node.indexOf('EthereumJS TestRPC') >= 0))
-  })
 
   describe('FundingHub', function() {
     let instance
@@ -25,7 +15,8 @@ contract('FundingHub', function(accounts) {
     let imageUrl =
       'http://virtualrealitytimes.com/wp-content/uploads/2017/04/3044381-ocie.jpg'
     let beneficiary = accounts[0]
-    let contributor = accounts[1]
+    let contributor1 = accounts[1]
+    let contributor2 = accounts[2]
     let deadline = Math.floor(Date.now() / 1000) + 3600 // 1 hour from now
     let fundingGoal = web3.toWei(40, 'ether')
     let contribution = web3.toWei(4, 'ether')
@@ -56,16 +47,22 @@ contract('FundingHub', function(accounts) {
       }
     )
 
-    before('should contribute 4 eth', function() {
+    before('should contribute 4 eth from contributer 1', function() {
       return instance.contribute(project.address, {
-        from: contributor,
+        from: contributor1,
+        value: contribution
+      })
+    })
+
+    before('should contribute 4 eth from contributer 2', function() {
+      return instance.contribute(project.address, {
+        from: contributor2,
         value: contribution
       })
     })
 
     describe('Project', function() {
       it('should refund', function() {
-        if (!isTestRPC) this.skip('Needs TestRPC')
         let increaseBefore
         let balanceBeforeRefund
         return web3.evm
@@ -76,18 +73,13 @@ contract('FundingHub', function(accounts) {
           })
           .then(increase => {
             assert.strictEqual(increase, increaseBefore + 3600)
-            balanceBeforeRefund = web3.eth.getBalance(contributor).toNumber()
-            return project.refund({ from: contributor })
+            balanceBeforeRefund = web3.eth.getBalance(contributor1).toNumber()
+            return project.refund({ from: contributor1 })
           })
           .then(result => {
-            // Contributor's balance is greater than what it was before refund
+            // contributor1's balance is greater than what it was before refund
             assert(
-              web3.eth.getBalance(contributor).toNumber() > balanceBeforeRefund
-            )
-            // Project balance is zero after refund
-            assert.strictEqual(
-              web3.eth.getBalance(project.address).toNumber(),
-              0
+              web3.eth.getBalance(contributor1).toNumber() > balanceBeforeRefund
             )
           })
       })

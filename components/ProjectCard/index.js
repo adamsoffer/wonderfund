@@ -1,4 +1,3 @@
-import Truncate from 'react-truncate'
 import ProgressBar from '../ProgressBar'
 import { daysRemaining } from '../../lib/utilities'
 import {
@@ -22,11 +21,7 @@ export default ({ project, style }) => {
       <Image style={{ backgroundImage: `url(${project.imageUrl})` }} />
       <Body>
         <Heading>{project.name}</Heading>
-        <Description>
-          <Truncate lines={2} ellipsis={<span>...</span>}>
-            {project.description}
-          </Truncate>
-        </Description>
+        <Description>{project.description}</Description>
         <ProgressBar
           width={`${project.amountRaised / project.fundingGoal * 100}%`}
         />

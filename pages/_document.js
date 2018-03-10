@@ -22,6 +22,10 @@ export default class MyDocument extends Document {
         <Head>
           <title>Wonderfund</title>
           <style dangerouslySetInnerHTML={{ __html: this.props.css }} />
+          <link
+            href="https://fonts.googleapis.com/css?family=Raleway:400,500,600,700"
+            rel="stylesheet"
+          />
         </Head>
         <body>
           <Main />

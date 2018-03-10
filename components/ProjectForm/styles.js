@@ -3,7 +3,8 @@ import { container } from '../../lib/mixins'
 
 export const Container = glamorous.form({
   ...container,
-  borderRadius: '3px'
+  borderRadius: '3px',
+  paddingTop: '40px'
 })
 
 export const Wrapper = glamorous.div({
@@ -14,6 +15,7 @@ export const Image = glamorous.div({
   backgroundImage: 'url(http://placehold.it/400x400)',
   backgroundPosition: 'center',
   backgroundSize: 'cover',
+  borderRadius: '15px',
   height: '500px',
   width: '60%'
 })
@@ -48,5 +50,6 @@ export const Num = glamorous.span({
 
 export const StatsContainer = glamorous.span({
   display: 'flex',
-  flexDirection: 'column'
+  flexDirection: 'column',
+  marginBottom: '15px'
 })

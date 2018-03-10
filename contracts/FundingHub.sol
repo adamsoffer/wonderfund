@@ -1,14 +1,15 @@
-pragma solidity ^0.4.2;
+pragma solidity ^0.4.4;
 
-import "./Project.sol";
+import "zeppelin-solidity/contracts/math/SafeMath.sol";
 import "./Mortal.sol";
+import "./Project.sol";
 
 
 contract FundingHub is Mortal {
   address public owner;
   address[] public projects;
 
-  event ProjectCreated(address project);
+  event ProjectCreated(address indexed sender, address project);
 
   function FundingHub() public {
     owner = msg.sender;
@@ -23,6 +24,12 @@ contract FundingHub is Mortal {
     uint fundingGoal
   ) public returns (address)
   {
+    // require deadline to be some time in the future
+    require(now < deadline);
+
+    // The project creator must set a funding goal
+    require(fundingGoal > 0);
+
     Project newProject = new Project(
       projectName,
       description,
@@ -32,15 +39,21 @@ contract FundingHub is Mortal {
       fundingGoal
     );
     projects.push(newProject);
-    ProjectCreated(newProject);
+    ProjectCreated(msg.sender, newProject);
     return newProject;
   }
 
-  function getProjects() public returns (address[]) {
+  function getProjects() public view returns (address[]) {
     return projects;
   }
 
   function contribute(address projectAddress) public payable {
+    // Make sure project address is a valid
+    require(projectAddress != 0);
     Project(projectAddress).fund.value(msg.value)(msg.sender);
+  }
+
+  function() public {
+    revert();
   }
 }
