@@ -9,9 +9,6 @@ export default ({ relative, inverse }) => {
         <Logo inverse={inverse}>WONDΞRFUND</Logo>
       </Link>
       <Nav>
-        <Link href="/about">
-          <LinkContainer inverse={inverse}>About Us</LinkContainer>
-        </Link>
         <Link href="/startACampaign" as="start-a-campaign">
           <LinkContainer inverse={inverse}>
             <Button secondary={!inverse}>Start a Campaign</Button>

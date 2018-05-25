@@ -19,16 +19,6 @@ const Project = contract(projectArtifacts)
 FundingHub.setProvider(web3.currentProvider)
 Project.setProvider(web3.currentProvider)
 
-// dirty hack for web3@1.0.0 support for localhost testrpc, see https://github.com/trufflesuite/truffle-contract/issues/56#issuecomment-331084530
-if (typeof Project.currentProvider.sendAsync !== 'function') {
-  Project.currentProvider.sendAsync = function() {
-    return Project.currentProvider.send.apply(
-      Project.currentProvider,
-      arguments
-    )
-  }
-}
-
 export default class extends React.Component {
   static async getInitialProps({ pathname }) {
     const projects = await getProjects()
@@ -51,9 +41,7 @@ export default class extends React.Component {
       <Main>
         <Header />
         <Masthead />
-        <PageTitle
-          heading="Featured Projects"
-        />
+        <PageTitle heading="Featured Projects" />
         <ProjectList projects={this.props.projects} />
         <Footer />
       </Main>
@@ -62,8 +50,8 @@ export default class extends React.Component {
 }
 
 async function getProjects() {
-  const projectInstance = await FundingHub.deployed()
-  const projectAddresses = await projectInstance.getProjects.call()
+  const fundingHubInstance = await FundingHub.deployed()
+  const projectAddresses = await fundingHubInstance.getProjects.call()
   let promiseArray = []
   projectAddresses.map(projectAddress => {
     return promiseArray.push(getProject(projectAddress))
@@ -75,18 +63,18 @@ function getProject(projectAddress) {
   let projectInstance = Project.at(projectAddress)
   return new Promise((resolve, reject) => {
     Promise.all([
-      projectInstance.getProject.call(),
+      projectInstance.projectInfo.call(),
       projectInstance.amountRaised.call(),
       projectInstance.successfullyFunded.call()
     ])
       .then(result => {
         resolve({
-          name: web3.utils.toAscii(result[0][0]),
+          name: result[0][0],
           address: projectAddress,
           description: result[0][1],
           imageUrl: result[0][2],
-          deadline: moment.unix(result[0][3].toString()),
-          fundingGoal: web3.utils.fromWei(result[0][4].toString(), 'ether'),
+          deadline: moment.unix(result[0][4].toString()),
+          fundingGoal: web3.utils.fromWei(result[0][5].toString(), 'ether'),
           amountRaised: web3.utils.fromWei(result[1].toString(), 'ether'),
           successfullyFunded: result[2]
         })

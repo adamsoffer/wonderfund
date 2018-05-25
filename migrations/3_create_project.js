@@ -1,4 +1,5 @@
 var FundingHub = artifacts.require('./FundingHub.sol')
+var web3 = require('../lib/web3')
 
 module.exports = function(deployer, network, accounts) {
   if (accounts.length === 0) {
@@ -13,7 +14,7 @@ module.exports = function(deployer, network, accounts) {
     'https://s3.amazonaws.com/static.oculus.com/website/2016/03/riftshipping2.jpg'
   var beneficiary = accounts[0]
   var deadline = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60
-  var fundingGoal = web3.toWei(10, 'ether')
+  var fundingGoal = web3.utils.toWei('10', 'ether')
   FundingHub.deployed().then(instance => {
     return instance.createProject(
       projectName,

@@ -1,56 +1,76 @@
 pragma solidity ^0.4.4;
 
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
-import "./Mortal.sol";
+import "zeppelin-solidity/contracts/ownership/Ownable.sol";
+import "zeppelin-solidity/contracts/lifecycle/Destructible.sol";
 import "./Project.sol";
 
 
-contract FundingHub is Mortal {
-  address public owner;
+/**
+ * @title FundingHub
+ * @dev FundingHub is the registry of all Projects to be funded.
+ */
+contract FundingHub is Ownable, Destructible {
   address[] public projects;
 
-  event ProjectCreated(address indexed sender, address project);
+  event LogCreateProject(address indexed sender, address project);
+  event LogContribute(address indexed sender, address project, uint256 amount);
 
-  function FundingHub() public {
-    owner = msg.sender;
-  }
-
+  /**
+   * @dev Adds a new project to the FundingHub.
+   * todo: Move _projectName, _description, and _imageUrl offchain
+   * @param _projectName The name of the project
+   * @param _description A description of the project
+   * @param _imageUrl An image url representing the project
+   * @param _beneficiary The owner of the project and beneficiary of the funds
+   * @param _deadline The time before which the amount has to be raised
+   * @param _fundingGoal The amount to be raised
+   */
   function createProject(
-    bytes32 projectName,
-    string description,
-    string imageUrl,
-    address beneficiary,
-    uint256 deadline,
-    uint fundingGoal
-  ) public returns (address)
+    string _projectName,
+    string _description,
+    string _imageUrl,
+    address _beneficiary,
+    uint256 _deadline,
+    uint256 _fundingGoal
+  ) public
   {
     // require deadline to be some time in the future
-    require(now < deadline);
+    require(now < _deadline);
 
     // The project creator must set a funding goal
-    require(fundingGoal > 0);
+    require(_fundingGoal > 0);
 
     Project newProject = new Project(
-      projectName,
-      description,
-      imageUrl,
-      beneficiary,
-      deadline,
-      fundingGoal
+      _projectName,
+      _description,
+      _imageUrl,
+      _beneficiary,
+      _deadline,
+      _fundingGoal
     );
     projects.push(newProject);
-    ProjectCreated(msg.sender, newProject);
-    return newProject;
+    LogCreateProject(msg.sender, newProject);
   }
 
+  /**
+   * @dev Returns array of project addresses
+   */
   function getProjects() public view returns (address[]) {
     return projects;
   }
 
-  function contribute(address projectAddress) public payable {
-    // Make sure project address is a valid
-    require(projectAddress != 0);
-    Project(projectAddress).fund.value(msg.value)(msg.sender);
+  /**
+   * @dev Contributes to a Project identified by its address
+   * @param _projectAddress The address of the project
+   */
+  function contribute(address _projectAddress) public payable {
+    require(_projectAddress != 0);
+    require(msg.value > 0);
+    
+    Project(_projectAddress).fund.value(msg.value)(msg.sender);
+    
+    LogContribute(msg.sender, _projectAddress, msg.value);
   }
 
   function() public {
