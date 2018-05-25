@@ -22,7 +22,7 @@ Directly fund projects around the world.
 
 ## Testing
 
-1. run `truffle test` to test the `refund` function in the `Project` contract
+1. run `npm run test`
 
 ## Common Errors
 
